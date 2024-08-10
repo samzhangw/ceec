@@ -1,0 +1,428 @@
+<html><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>114年學測倒數計時器</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Noto+Sans+TC:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary-color: #6a11cb;
+    --secondary-color: #2575fc;
+    --accent-color: #ff6b6b;
+    --text-color: #333;
+    --background-color: #f9f9f9;
+  }
+  
+  body {
+    font-family: 'Poppins', 'Noto Sans TC', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(120deg, var(--primary-color), var(--secondary-color));
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  
+  .header {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 1rem 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+
+  .header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+  }
+
+  .logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-decoration: none;
+  }
+
+  .nav-menu {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .nav-item {
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+  }
+
+  .nav-item:hover {
+    color: var(--secondary-color);
+  }
+  
+  .container {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 30px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    padding: 3rem;
+    text-align: center;
+    max-width: 900px;
+    width: 90%;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    margin: 2rem auto;
+  }
+  
+  .container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      45deg,
+      rgba(106, 17, 203, 0.1),
+      rgba(37, 117, 252, 0.1),
+      rgba(255, 107, 107, 0.1)
+    );
+    transform: rotate(45deg);
+    z-index: -1;
+    animation: gradientMove 20s ease infinite;
+  }
+  
+  @keyframes gradientMove {
+    0% { transform: rotate(45deg) translate(-30%, -30%); }
+    50% { transform: rotate(45deg) translate(30%, 30%); }
+    100% { transform: rotate(45deg) translate(-30%, -30%); }
+  }
+  
+  h1 {
+    color: var(--primary-color);
+    font-size: 3rem;
+    margin-bottom: 2.5rem;
+    position: relative;
+    display: inline-block;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  h1::after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    border-radius: 2px;
+  }
+  
+  #countdown {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+  
+  .time-unit {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border-radius: 20px;
+    padding: 1.5rem;
+    min-width: 120px;
+    box-shadow: 0 10px 25px rgba(106, 17, 203, 0.2);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+  
+  .time-unit:hover {
+    transform: translateY(-10px) scale(1.05);
+    box-shadow: 0 15px 30px rgba(106, 17, 203, 0.3);
+  }
+  
+  .time-value {
+    font-size: 3rem;
+    font-weight: 700;
+    display: block;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  .time-label {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: 0.9;
+    margin-top: 0.5rem;
+    display: block;
+  }
+  
+  .exam-dates {
+    background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+    color: white;
+    padding: 1.5rem;
+    border-radius: 15px;
+    font-size: 1.4rem;
+    margin-top: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(37, 117, 252, 0.2);
+  }
+  
+  .exam-dates::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0),
+      rgba(255, 255, 255, 0.3),
+      rgba(255, 255, 255, 0)
+    );
+    transform: rotate(30deg);
+    animation: shine 4s infinite linear;
+  }
+  
+  @keyframes shine {
+    0% { transform: translateX(-100%) rotate(30deg); }
+    100% { transform: translateX(100%) rotate(30deg); }
+  }
+
+  .copyright {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: auto;
+    padding: 1rem;
+    background-color: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+  }
+
+  .menu-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 25px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 10;
+  }
+
+  .menu-toggle span {
+    width: 30px;
+    height: 3px;
+    background-color: var(--primary-color);
+    border-radius: 10px;
+    transition: all 0.3s linear;
+    position: relative;
+    transform-origin: 1px;
+  }
+
+  @media (max-width: 768px) {
+    .header-content {
+      padding: 1rem;
+    }
+
+    .menu-toggle {
+      display: flex;
+    }
+
+    .nav-menu {
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 100vh;
+      width: 70%;
+      max-width: 300px;
+      background-color: white;
+      flex-direction: column;
+      padding-top: 60px;
+      transform: translateX(100%);
+      transition: transform 0.3s ease-in-out;
+      box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+      gap: 0;
+    }
+
+    .nav-menu.active {
+      transform: translateX(0);
+    }
+
+    .nav-item {
+      padding: 1rem 2rem;
+      width: 100%;
+      text-align: left;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .container {
+      padding: 2rem;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+    }
+
+    #countdown {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .time-unit {
+      min-width: calc(50% - 1rem);
+      padding: 1rem;
+    }
+
+    .time-value {
+      font-size: 2.5rem;
+    }
+
+    .time-label {
+      font-size: 0.9rem;
+    }
+
+    .exam-dates {
+      font-size: 1.2rem;
+    }
+
+    .copyright {
+      font-size: 0.8rem;
+    }
+  }
+</style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-content">
+      <a href="#" class="logo">學測倒數</a>
+      <button class="menu-toggle" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <nav class="nav-menu">
+        <a href="#" class="nav-item">首頁</a>
+        <a href="https://www.ceec.edu.tw/unithome?psid=0J100517506832331817" class="nav-item">考試資訊</a>
+        <a href="https://tcte.onrender.com/" class="nav-item">統測倒數</a>
+        <a href="https://tyctw.github.io/114clock/" class="nav-item">會考倒數</a>
+
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <h1>114年學測倒數</h1>
+    <div id="countdown">
+      <div class="time-unit">
+        <span class="time-value" id="days">00</span>
+        <span class="time-label">天</span>
+      </div>
+      <div class="time-unit">
+        <span class="time-value" id="hours">00</span>
+        <span class="time-label">小時</span>
+      </div>
+      <div class="time-unit">
+        <span class="time-value" id="minutes">00</span>
+        <span class="time-label">分鐘</span>
+      </div>
+      <div class="time-unit">
+        <span class="time-value" id="seconds">00</span>
+        <span class="time-label">秒</span>
+      </div>
+    </div>
+    <div class="exam-dates">
+      考試日期：114年1月18日至20日
+    </div>
+  </div>
+
+  <div class="copyright">
+    © 2024 學測倒數計時器. 版權所有. 本網站僅供參考，實際考試日期以大考中心公告為準。
+  </div>
+
+  <script>
+    function updateCountdown() {
+      const examDate = new Date('2025-01-18T08:00:00');
+      const now = new Date();
+      const timeLeft = examDate - now;
+
+      const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+      const countdownElement = document.getElementById('countdown');
+      
+      if (timeLeft > 0) {
+        document.getElementById('days').textContent = days.toString().padStart(2, '0');
+        document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+        document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+        document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+        
+        if (timeLeft < 7 * 24 * 60 * 60 * 1000) {
+          countdownElement.style.color = 'var(--accent-color)';
+        }
+      } else {
+        const examEndDate = new Date('2025-01-20T17:00:00');
+        if (now < examEndDate) {
+          countdownElement.innerHTML = '<div class="time-unit"><span class="time-value">學測進行中</span><span class="time-label">祝考生順利！</span></div>';
+        } else {
+          countdownElement.innerHTML = '<div class="time-unit"><span class="time-value">學測結束</span><span class="time-label">祝未來順利！</span></div>';
+        }
+        clearInterval(countdownTimer);
+      }
+    }
+
+    const countdownTimer = setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    // 添加滑鼠懸停效果
+    const timeUnits = document.querySelectorAll('.time-unit');
+    timeUnits.forEach(unit => {
+      unit.addEventListener('mouseover', () => {
+        unit.style.transform = 'translateY(-10px) scale(1.05)';
+        unit.style.boxShadow = '0 15px 30px rgba(106, 17, 203, 0.3)';
+      });
+      unit.addEventListener('mouseout', () => {
+        unit.style.transform = '';
+        unit.style.boxShadow = '';
+      });
+    });
+
+    // 手機版選單切換
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navMenu = document.querySelector('.nav-menu');
+
+    menuToggle.addEventListener('click', () => {
+      navMenu.classList.toggle('active');
+      menuToggle.classList.toggle('active');
+    });
+
+    // 點擊選單項目時關閉選單
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => {
+      item.addEventListener('click', () => {
+        navMenu.classList.remove('active');
+        menuToggle.classList.remove('active');
+      });
+    });
+
+    // 點擊頁面其他區域時關閉選單
+    document.addEventListener('click', (event) => {
+      if (!event.target.closest('.nav-menu') && !event.target.closest('.menu-toggle')) {
+        navMenu.classList.remove('active');
+        menuToggle.classList.remove('active');
+      }
+    });
+  </script>
+</body></html>
